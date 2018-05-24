@@ -23,7 +23,7 @@ class TimeReportEntry(db.Model):
     report_id = db.Column(db.Integer, db.ForeignKey("time_report.id"))
     employee_id = db.Column(db.Integer, nullable=False)
     date = db.Column(db.Date, nullable=False, index=True)
-    hours_worked = db.Column(db.Integer, nullable=False)
+    hours_worked = db.Column(db.Float(precision=2), nullable=False)
     job_group = db.Column(db.String(1), nullable=False)
 
     def __repr__(self):
