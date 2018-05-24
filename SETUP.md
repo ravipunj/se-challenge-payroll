@@ -10,6 +10,10 @@
   * `source payrollenv/bin/activate`
 * Install pip dependencies
   * `pip install -r requirements.txt`
+* Initialize sqlite database (the database is created at _/tmp/payroll.db_)
+  * `flask db init`
+* Run all database migrations
+  * `flask db upgrade`
 * Run API server
   * `gunicorn --bind 0.0.0.0:8000 app:app`
 
