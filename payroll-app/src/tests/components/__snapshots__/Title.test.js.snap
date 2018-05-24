@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Title matches snapshot 1`] = `
+ReactWrapper {
+  "length": 1,
+  Symbol(enzyme.__unrendered__): <Unknown />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {},
+    "ref": null,
+    "rendered": Object {
+      "instance": <div
+        class="row"
+>
+        <div
+                class="column"
+                style="text-align: center;"
+        >
+                <h1>
+                        Payroll
+                </h1>
+        </div>
+</div>,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="column"
+          style={
+                    Object {
+                              "textAlign": "center",
+                            }
+          }
+>
+          <h1>
+                    Payroll
+          </h1>
+</div>,
+        "className": "row",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": <div
+            class="column"
+            style="text-align: center;"
+>
+            <h1>
+                        Payroll
+            </h1>
+</div>,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <h1>
+              Payroll
+</h1>,
+            "className": "column",
+            "style": Object {
+              "textAlign": "center",
+            },
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": <h1>
+                Payroll
+</h1>,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Payroll",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Payroll",
+              ],
+              "type": "h1",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {},
+      "ref": null,
+      "rendered": Object {
+        "instance": <div
+          class="row"
+>
+          <div
+                    class="column"
+                    style="text-align: center;"
+          >
+                    <h1>
+                              Payroll
+                    </h1>
+          </div>
+</div>,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="column"
+            style={
+                        Object {
+                                    "textAlign": "center",
+                                  }
+            }
+>
+            <h1>
+                        Payroll
+            </h1>
+</div>,
+          "className": "row",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": <div
+              class="column"
+              style="text-align: center;"
+>
+              <h1>
+                            Payroll
+              </h1>
+</div>,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <h1>
+                Payroll
+</h1>,
+              "className": "column",
+              "style": Object {
+                "textAlign": "center",
+              },
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": <h1>
+                  Payroll
+</h1>,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Payroll",
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Payroll",
+                ],
+                "type": "h1",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+      },
+    },
+  },
+}
+`;
