@@ -3,7 +3,7 @@ from io import BytesIO
 
 from app import TimeReport, TimeReportEntry
 from tests.base import BaseTestCase
-from tests.test_models import insert_time_report
+from tests.test_models import insert_time_report, insert_time_report_entry
 
 STUB_CSV_DATA = b"""date, hours worked, employee id, job group
 4/11/2016, 10, 1, A
@@ -102,4 +102,70 @@ class TestPayrollCsvEndpoint(BaseTestCase):
                              date=date(2016, 4, 11),
                              hours_worked=10,
                              job_group="A")]
+        )
+
+
+class TestPayrollReport(BaseTestCase):
+    def test_returns_empty_list_if_no_data_is_available(self):
+        response = self.test_client.get('/payroll_report')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), [])
+
+    def test_returns_correct_result(self):
+        time_report_1 = insert_time_report(id=1)
+        time_report_2 = insert_time_report(id=2)
+
+        # employee 1 time report entries
+        insert_time_report_entry(time_report=time_report_1,
+                                 employee_id=1,
+                                 date=date(2016, 5, 1),
+                                 hours_worked=5.5,
+                                 job_group="A")
+        insert_time_report_entry(time_report=time_report_2,
+                                 employee_id=1,
+                                 date=date(2016, 5, 12),
+                                 hours_worked=7,
+                                 job_group="A")
+        insert_time_report_entry(time_report=time_report_2,
+                                 employee_id=1,
+                                 date=date(2016, 5, 18),
+                                 hours_worked=5.5,
+                                 job_group="A")
+        # employee 2 time report entries
+        insert_time_report_entry(time_report=time_report_1,
+                                 employee_id=2,
+                                 date=date(2016, 5, 8),
+                                 hours_worked=5,
+                                 job_group="B"),
+        insert_time_report_entry(time_report=time_report_1,
+                                 employee_id=2,
+                                 date=date(2016, 5, 16),
+                                 hours_worked=2.5,
+                                 job_group="B"),
+        insert_time_report_entry(time_report=time_report_2,
+                                 employee_id=2,
+                                 date=date(2016, 5, 22),
+                                 hours_worked=8,
+                                 job_group="B")
+
+        response = self.test_client.get('/payroll_report')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertListEqual(
+            response.get_json(),
+            [
+                {"employee_id": "1",
+                 "pay_period": "05/01/2016 - 05/15/2016",
+                 "amount_paid": "$250.00"},
+                {"employee_id": "1",
+                 "pay_period": "05/16/2016 - 05/31/2016",
+                 "amount_paid": "$110.00"},
+                {"employee_id": "2",
+                 "pay_period": "05/01/2016 - 05/15/2016",
+                 "amount_paid": "$150.00"},
+                {"employee_id": "2",
+                 "pay_period": "05/16/2016 - 05/31/2016",
+                 "amount_paid": "$315.00"},
+            ]
         )

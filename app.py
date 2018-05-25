@@ -1,7 +1,8 @@
 import csv
+import collections
+import dateutil.parser
 from io import StringIO
 
-import dateutil.parser
 from flask import request
 from flask_api import FlaskAPI
 from flask_cors import CORS
@@ -73,6 +74,61 @@ def payroll_csv():
 
     return {}, 201
 
+
+def get_pay_period_start_and_end_date(date):
+    start_day = 1
+    end_day = 15
+    if (date.day > 15):
+        start_day = 16
+        if date.month in [1, 3, 5, 7, 8, 10, 12]:
+            end_day = 31
+        elif date.month in [4, 6, 9, 11]:
+            end_day = 30
+        elif date.month == 2:
+            end_day = 28
+            if date.year % 4 == 0:
+                end_day = 29
+
+    return date.replace(day=start_day), date.replace(day=end_day)
+
+
+def get_amount_paid_for_entry(entry):
+    pay_rate = 0.
+    if entry.job_group == "A":
+        pay_rate = 20.
+    elif entry.job_group == "B":
+        pay_rate = 30.
+
+    return pay_rate * entry.hours_worked
+
+
+def format_date(date):
+    return date.strftime("%m/%d/%Y")
+
+
+@app.route('/payroll_report', methods=['GET'])
+def payroll_report():
+    time_report_entries = \
+        db.session.query(TimeReportEntry).all()
+
+    entries_by_employee_id_and_pay_period = collections.defaultdict(list)
+    for entry in time_report_entries:
+        pay_period = get_pay_period_start_and_end_date(entry.date)
+        entries_by_employee_id_and_pay_period[(entry.employee_id, pay_period)].append(entry)
+
+    total_amount_paid_by_employee_id_and_pay_period = \
+        {employee_id_and_pay_period: sum(map(get_amount_paid_for_entry, entries))
+                                     for employee_id_and_pay_period, entries
+                                     in entries_by_employee_id_and_pay_period.items()}
+
+    return [
+        {"employee_id": str(employee_id),
+         "pay_period": "{start} - {end}".format(start=format_date(pay_period_start),
+                                                end=format_date(pay_period_end)),
+         "amount_paid": "${amount_paid:.2f}".format(amount_paid=amount_paid)}
+        for (employee_id, (pay_period_start, pay_period_end)), amount_paid in
+        sorted(total_amount_paid_by_employee_id_and_pay_period.items(), key=lambda k: k)
+    ]
 
 
 if __name__ == "__main__":
