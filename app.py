@@ -106,6 +106,12 @@ def format_date(date):
     return date.strftime("%m/%d/%Y")
 
 
+def sort_function_for_payroll_report(entry):
+    k, v = entry
+    (employee_id, (pay_period_start, pay_period_end)) = k
+    return (employee_id, pay_period_start)
+
+
 @app.route('/payroll_report', methods=['GET'])
 def payroll_report():
     time_report_entries = \
@@ -127,7 +133,8 @@ def payroll_report():
                                                 end=format_date(pay_period_end)),
          "amount_paid": "${amount_paid:.2f}".format(amount_paid=amount_paid)}
         for (employee_id, (pay_period_start, pay_period_end)), amount_paid in
-        sorted(total_amount_paid_by_employee_id_and_pay_period.items(), key=lambda k: k)
+        sorted(list(total_amount_paid_by_employee_id_and_pay_period.items()),
+               key=sort_function_for_payroll_report)
     ]
 
 
