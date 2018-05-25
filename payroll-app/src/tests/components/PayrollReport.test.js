@@ -5,6 +5,6 @@ import { PayrollReport } from '../../components/PayrollReport';
 
 describe('PayrollReport', () => {
   it('matches snapshot', () => {
-    expect(shallow(<PayrollReport/>)).toMatchSnapshot();
+    expect(shallow(<PayrollReport />)).toMatchSnapshot();
   });
 });
