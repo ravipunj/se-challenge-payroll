@@ -1,26 +1,3 @@
-# Wave Software Development Challenge
-
-Applicants for the [Software
-developer](https://wave.bamboohr.co.uk/jobs/view.php?id=1) role at Wave must
-complete the following challenge, and submit a solution prior to the onsite
-interview.
-
-The purpose of this exercise is to create something that we can work on
-together during the onsite. We do this so that you get a chance to collaborate
-with Wavers during the interview in a situation where you know something better
-than us (it's your code, after all!)
-
-There isn't a hard deadline for this exercise; take as long as you need to
-complete it. However, in terms of total time spent actively working on the
-challenge, we ask that you not spend more than a few hours, as we value your
-time and are happy to leave things open to discussion in the on-site interview.
-
-Please use whatever programming language and framework you feel the most
-comfortable with.
-
-Feel free to email [dev.careers@waveapps.com](dev.careers@waveapps.com) if you
-have any questions.
-
 ## Project Description
 
 Imagine that this is the early days of Wave's history, and that we are prototyping
@@ -193,32 +170,58 @@ object-oriented design, feel free to dive deeper into the domain model of this
 problem. We're happy to tweak the requirements slightly if it helps you show
 off one of your strengths.
 
-### Documentation:
+## Assumption in implementation:
 
-Please modify `README.md` to add:
+1. Employees don't change job group, and if they do, this payroll system does not validate.
+2. Employee IDs are simply used to aggregate payments in a pay period and aren't an identifier per se.
 
-1. Instructions on how to build/run your application
-1. A paragraph or two about what you are particularly proud of in your
-   implementation, and why.
+## Instructions to setup:
 
-## Submission Instructions
+Please read _SETUP.md_ for set up and testing instructions.
 
-1. Clone the repository.
-1. Complete your project as described above within your local repository.
-1. Ensure everything you want to commit is committed.
-1. Create a git bundle: `git bundle create your_name.bundle --all`
-1. Email the bundle file to [dev.careers@waveapps.com](dev.careers@waveapps.com)
+## Notes from author (answers why I'm proud of this work):
 
-## Evaluation
+### On choice of framework
+I chose to use Flask on the backend because I was looking for something light,
+but since I understand that this isn't the complete application, I went with something
+that's easily extended as well. Flask allows me to cherry-pick what modules I want
+included - since I didn't care for rendering presentation code on the backend, I did not
+need a template package.
 
-Evaluation of your submission will be based on the following criteria.
+For the frontend, I went with React and no other major libraries - again, needed something
+lightweight (bootstrapping with create-react-app is great for prototyping), but easily
+extendible with libraries such as react-redux, redux-router, etc.
 
-1. Did you follow the instructions for submission?
-1. Did you document your build/deploy instructions and your explanation of what
-   you did well?
-1. Were models/entities and other components easily identifiable to the
-   reviewer?
-1. What design decisions did you make when designing your models/entities? Are
-   they explained?
-1. Did you separate any concerns in your application? Why or why not?
-1. Does your solution use appropriate data types for the problem as described?
+I made a conscious decision to separate the frontend from the backend since that provides
+room for both to grow independently and not get locked into the same development cycle.
+Ideally, I would even keep them in separate repos, but for the sake of this challenge, I
+kept them together.
+
+### On writing tests
+I'm particularly happy with the more-or-less TDD approach I took while building the backend.
+Given time constraints, I didn't add functional tests to the frontend, but I'm pretty confident
+that I saved a ton of headache debugging bugs on the backend.
+
+Having decent test coverage also enables me to refactor quickly since I like to look at code
+organization from multiple angles, and I can quickly validate that I'm not breaking things when
+I move them around.
+
+### On using a database ORM and migrations
+I knew that I'd be spending a significant amount of extra time getting things set up and 
+writing models and reviewing migrations, but I think it's been a good investment. 
+With Flask-SQLAlchemy and Flask-Migrate, I'm pretty confident in plugging in different storage
+solutions and rebuilding the application in multiple environments.
+
+Havings a database ORM also allowed me to focus on writing business logic and spend less time
+worrying about storage/retrieval logic.
+
+## Suggested improvements / backlog (in no particular order)
+
+* Improve frontend test coverage
+* Improve CSV validation and error reporting
+* Consider if data compilation required for the payroll report can be done at the database level
+either through a query or a stored procedure.
+* Add pagination to payroll report to make endpoint scalable.
+* Add logging and instrumentation
+* Write CI/CD pipeline and deployment instructions
+* Use MySQL/PostgresSQL instead of sqlite
