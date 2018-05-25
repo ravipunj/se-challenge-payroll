@@ -9,7 +9,6 @@ export class ReportUploader extends React.Component {
     this.onFileChanged = this.onFileChanged.bind(this);
   }
   onSubmit(e) {
-    e.preventDefault();
     const formData = new FormData();
     formData.append("report", this.fileInput.files[0]);
     axios.post("/payroll_csv", formData, {headers: {"Content-Type": "multipart/form-data"}});
