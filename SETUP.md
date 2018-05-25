@@ -28,5 +28,13 @@
     * `npm start`
   * Method #2: This will bundle the frontend app into static files
     * `npm run build`
-    * Open _payroll-app/build/index.html_ in a browser 
+    * Open _payroll-app/build/index.html_ in a browser
+
+# Test Instructions
+
+## Flask App testing
+From _\<repo root\>_, run `python3 -m nose`
+
+## React App testing
+From _\<repo root\>/payroll-app, run `npm test`
   
