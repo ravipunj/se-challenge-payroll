@@ -1,6 +1,4 @@
 import csv
-import collections
-import dateutil.parser
 from io import StringIO
 
 from flask import request
@@ -8,6 +6,7 @@ from flask_api import FlaskAPI
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
 
 app = FlaskAPI(__name__)
 CORS(app)
@@ -19,7 +18,7 @@ db = SQLAlchemy(app=app)
 migrate = Migrate(app=app, db=db)
 
 from models import TimeReport, TimeReportEntry
-from errors import ReportAlreadyExistsError, CSVParsingError
+import utils
 
 db.create_all()
 
@@ -29,44 +28,13 @@ def health():
     return {}
 
 
-EXPECTED_CSV_HEADER = ["date", "hours worked", "employee id", "job group"]
-JOB_GROUP_ALLOW_VALUES = ["A", "B"]
-
-
 @app.route('/payroll_csv', methods=['POST'])
 def payroll_csv():
     report_file = request.files['report']
     stream = StringIO(report_file.read().decode("UTF8"), newline=None)
-    headers, *rows, footer = csv.reader(stream)
-    headers = list(map(lambda s: s.strip(), headers))
-    report_id = int(footer[1])
 
-    if not all(map(lambda cmp: cmp[0] == cmp[1], zip(EXPECTED_CSV_HEADER, headers))):
-        raise CSVParsingError("CSV header not as expected")
-
-    if db.session.query(TimeReport).get(report_id) is not None:
-        raise ReportAlreadyExistsError("Report with id={id} already exists".format(id=report_id))
-
-    time_report = TimeReport(id=report_id)
-
-    time_report_entries = []
-    for idx, row in enumerate(rows):
-        try:
-            date_str, hours_str, employee_id_str, job_group = map(lambda x: x.strip(), row)
-            date = dateutil.parser.parse(date_str)
-            hours = float(hours_str)
-            employee_id = int(employee_id_str)
-            assert job_group in JOB_GROUP_ALLOW_VALUES
-        except Exception as e:
-            raise CSVParsingError("Error while parsing row# {row}".format(row=idx+2))
-
-        time_report_entries.append(TimeReportEntry(
-            report_id=time_report.id,
-            employee_id=employee_id,
-            date=date,
-            hours_worked=hours,
-            job_group=job_group,
-        ))
+    time_report, time_report_entries = \
+        utils.get_time_report_and_entries_from_csv(csv.reader(stream))
 
     db.session.add(time_report)
     db.session.add_all(time_report_entries)
@@ -114,18 +82,10 @@ def sort_function_for_payroll_report(entry):
 
 @app.route('/payroll_report', methods=['GET'])
 def payroll_report():
-    time_report_entries = \
-        db.session.query(TimeReportEntry).all()
-
-    entries_by_employee_id_and_pay_period = collections.defaultdict(list)
-    for entry in time_report_entries:
-        pay_period = get_pay_period_start_and_end_date(entry.date)
-        entries_by_employee_id_and_pay_period[(entry.employee_id, pay_period)].append(entry)
+    time_report_entries = db.session.query(TimeReportEntry).all()
 
     total_amount_paid_by_employee_id_and_pay_period = \
-        {employee_id_and_pay_period: sum(map(get_amount_paid_for_entry, entries))
-                                     for employee_id_and_pay_period, entries
-                                     in entries_by_employee_id_and_pay_period.items()}
+        utils.calculate_total_amounts_paid_for_time_report_entries(time_report_entries)
 
     return [
         {"employee_id": str(employee_id),
